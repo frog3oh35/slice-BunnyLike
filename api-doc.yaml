@@ -1,0 +1,92 @@
+openapi: 3.0.0
+info:
+  title: BunnyLike API
+  version: 1.0.0
+  description: 모달 기반 게시글 등록 및 좋아요 기능을 포함한 테스트용 API 명세입니다.
+  
+paths:
+  /api/post:
+    post:
+      summary: 게시글 등록
+      description: 아이디, 비밀번호, 내용으로 새로운 게시글을 등록합니다.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+                - content
+              properties:
+                username:
+                  type: string
+                  example: "연하"
+                password:
+                  type: string
+                  example: "1234"
+                content:
+                  type: string
+                  example: "오늘도 CS 열공 중!🐰"
+      responses:
+        '201':
+          description: 게시글이 성공적으로 등록되었습니다.
+          
+  /api/post/delete:
+    delete:
+      summary: 게시글 삭제
+      description: 비밀번호를 입력받아 특정 ID의 게시글을 삭제합니다.
+      parameters:
+        - name: password
+          in : query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 게시글이 삭제되었습니다.
+        '401':
+          description: 비밀번호가 일치하지 않습니다.
+        '404':
+          description: 해당 ID의 게시글을 찾을 수 없습니다.
+
+  /api/post/{postId}/like:
+    patch:
+      summary: 좋아요 토글
+      description: 해당 게시글에 좋아요를 누르거나 취소합니다.
+      tags:
+        - Posts
+      parameters:
+        - name: postId
+          in : path
+          required : true
+          schema:
+            type: integer
+          description: 좋아요를 토글할 게시글의 ID
+      responses:
+        '200':
+          description: 좋아요가 토글되었습니다.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  postId:
+                    type: integer
+                    example: 12
+                  like:
+                    type: boolean
+                    example: true
+                  totalLike:
+                    type: integer
+                    example: 14
+        '404':
+          description: 해당 ID의 게시글을 찾을 수 없습니다.
+        '500':
+          description: 서버 오류가 발생했습니다.
+        
+        
+        
+        
+        
