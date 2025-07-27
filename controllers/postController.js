@@ -6,20 +6,47 @@ let postId = 1;
 const createPost = (req, res) => {
     const { username, password, content } = req.body;
 
-    // 기본 유효성 검사
-    if (!username || !password || !content) {
-        return res.status(400).json({ message: '닉네임, 비밀번호, 내용은 필수입니다.' });
+    // 공백 제거한 버전
+    const trimmedUsername = username?.trim();
+    const trimmedPassword = password?.trim();
+    const trimmedContent = content?.trim();
+
+    // 유효성 검사용 정규식 (이모지 및 특수문자)
+    const emojiRegex = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
+    const htmlTagRegex = /<[^>]*>/g;
+    const specialCharRegex = /[~!@#$%^&*()+={}[\]|\\:;"'<>,.?/_]/;
+
+    // 공백만 입력 또는 필드 누락
+    if (!trimmedUsername || !trimmedPassword || !trimmedContent) {
+        return res.status(400).json({ message: '닉네임, 비밀번호, 내용은 공백 없이 입력해야 합니다.' });
     }
 
-    if (username.length < 2 || password.length < 4 || content.length > 300) {
-        return res.status(400).json({ message: '입력 조건을 확인하세요' });
+
+    // username 유효성 검사
+    if (
+        trimmedUsername.length < 2 || emojiRegex.test(trimmedUsername) || htmlTagRegex.test(trimmedUsername) || specialCharRegex.test(trimmedUsername)
+    ) {
+        return res.status(400).json({ message: 'username은 2자 이상, 공백/특수문자/이모지 없이 입력해야 합니다.' });
     }
+
+    // password 유효성 검사
+    if (
+        trimmedPassword.length < 4 || /\s/.test(password) || emojiRegex.test(trimmedPassword) || htmlTagRegex.test(trimmedPassword)
+    ) {
+        return res.status(400).json({ message: '비밀번호는 4자 이상, 공백/이모지 없이 입력해야 합니다.' });
+    }
+
+    // content 유효성 검사
+    if (trimmedContent.length > 300) {
+        return res.status(400).json({ message: '내용은 300자 이하여야 합니다.' })
+    }
+
 
     const newPost = {
         id: postId++,
-        username,
-        password,
-        content,
+        username: trimmedUsername,
+        password: trimmedPassword,
+        content: trimmedContent,
         like: 0, // 기본값
     };
 
