@@ -36,7 +36,7 @@ paths:
   /api/posts:
     delete:
       summary: 게시글 삭제
-      description: username과 password를 입력받아 특정 ID의 게시글을 삭제합니다.
+      description: postId, username과 password를 입력받아 특정 ID의 게시글을 삭제합니다.
       requestBody:
         required: true
         content:
@@ -44,20 +44,26 @@ paths:
             schema:
               type: object
               required:
+                - postId
                 - username
                 - password
               properties:
+                postId:
+                  type: string
+                  description: 삭제할 게시글의 고유 ID
                 username:
                   type: string
+                  description: 게시글 작성 시 사용한 username
                 password:
                   type: string
+                  description: 게시글 작성 시 사용한 password
       responses:
         '200':
           description: 게시글이 삭제되었습니다.
-        '401':
-          description: 비밀번호가 일치하지 않습니다.
+        '400':
+          description: username과 password는 필수 입력값입니다.
         '404':
-          description: 해당 ID의 게시글을 찾을 수 없습니다.
+          description: 해당 username과 password 조합의 게시글을 찾을 수 없습니다.
 
   /api/posts/{postId}/like:
     patch:
@@ -93,8 +99,3 @@ paths:
           description: 해당 ID의 게시글을 찾을 수 없습니다.
         '500':
           description: 서버 오류가 발생했습니다.
-        
-        
-        
-        
-        
