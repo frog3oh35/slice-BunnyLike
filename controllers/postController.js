@@ -61,17 +61,18 @@ const getPosts = (req, res) => {
 
 // 게시글 삭제
 const deletePost = (req, res) => {
-    const { id } = req.params;
-    const { password } = req.body;
+    const { username, password } = req.body;
 
-    const index = posts.findIndex(post => post.id == parseInt(id));
+    if (!username || !password) {
+        return res.status(400).json({ message: 'username과 password는 필수입니다.' });
+    }
+
+    const index = posts.findIndex(
+        post => post.username === username && post.password === password
+    );
 
     if (index === -1) {
         return res.status(404).json({ message: '게시글을 찾을 수 없습니다.' });
-    }
-
-    if (posts[index].password !== password) {
-        return res.status(403).json({ message: '비밀번호가 일치하지 않습니다.' });
     }
 
     posts.splice(index, 1);

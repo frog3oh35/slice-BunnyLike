@@ -14,7 +14,7 @@ router.post('/', createPost);
 router.get('/', getPosts);
 
 // 게시글 삭제
-router.delete('/:id', deletePost);
+router.delete('/', deletePost);
 
 // 좋아요 토글
 router.patch('/:id/like', toggleLike);
@@ -73,17 +73,10 @@ module.exports = router;
 
 /**
  * @swagger
- * /api/posts/{id}:
+ * /api/posts:
  *   delete:
  *     summary: 게시글 삭제
- *     description: 비밀번호가 일치할 경우 해당 게시글을 삭제합니다.
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: 삭제할 게시글의 ID
+ *     description: username과 password를 입력받아 특정 ID의 게시글을 삭제합니다.
  *     requestBody:
  *       required: true
  *       content:
@@ -91,18 +84,20 @@ module.exports = router;
  *           schema:
  *             type: object
  *             required:
+ *               - username
  *               - password
  *             properties:
+ *               username:
+ *                 type: string
  *               password:
  *                 type: string
- *                 description: 게시글 작성 시 입력한 비밀번호
  *     responses:
- *       200:
- *         description: 게시글 삭제 성공
- *       403:
- *         description: 비밀번호 불일치
- *       404:
- *         description: 게시글을 찾을 수 없음
+ *       '200':
+ *         description: 게시글이 삭제되었습니다.
+ *       '400':
+ *         description: username과 password는 필수입니다.
+ *       '404':
+ *         description: 해당 ID의 게시글을 찾을 수 없습니다.
  */
 
 /**
