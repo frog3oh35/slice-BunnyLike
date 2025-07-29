@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>BUNNY LIKE</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <main>
+        <h1>🐰 BunnyLike</h1>
+        <section id="post-list"></section>
+
+        <!-- 작성하기 버튼 -->
+        <button id="open-modal-btn">게시글 작성</button>
+
+        <!-- 모달창 -->
+        <div id="modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>게시글 작성</h2>
+                <input type="text" id="username" placeholder="닉네임 (2자 이상)" />
+                <input type="password" id="password" placeholder="비밀번호 (4자 이상)" />
+                <textarea id="content" placeholder="300자 이내 내용 작성"></textarea>
+                <div class="modal-actions">
+                    <button id="submit-post">업로드</button>
+                    <button id="close-modal-btn">취소</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 삭제 확인 모달 -->
+        <div id="delete-modal" class="modal hidden">
+            <div class="modal-content">
+                <h3>게시글을 삭제할까요?</h3>
+                <p id="delete-post-username" style="font-weight: bold; margin-bottom: 8px;"></p>
+                <input type="password" id="delete-password" placeholder="비밀번호를 입력하세요" />
+                <div class="modal-actions">
+                    <button id="confirm-delete-btn">삭제</button>
+                    <button id="cancel-delete-btn">취소</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="script.js" defer></script>
+</body>
+
+</html>
