@@ -5,6 +5,15 @@ window.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('submit-post');
     const modal = document.getElementById('modal');
 
+    const deleteModal = document.getElementById('delete-modal');
+    const deleteUsernameText = document.getElementById('delete-post-username');
+    const deletePasswordInput = document.getElementById('delete-password');
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+    const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+
+    let deleteTargetId = null;
+    let deleteTargetUsername = null;
+
     // 게시글 전체 조회 및 렌더링
     const loadPosts = async () => {
         try {
@@ -25,6 +34,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     <div><strong>${post.username}</strong></div>
                     <div>${post.content}</div>
                     <div>❤️ 좋아요 ${post.like}</div>
+                    <button class="delete-btn" data-id="${post.id}" data-username="${post.username}">삭제</button>
                 `;
                 postList.appendChild(div);
             });
@@ -33,14 +43,30 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // 삭제 버튼 이벤트 바인딩
+    const attachDeleteEvents = () => {
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                deleteTargetId = btn.dataset.id;
+                deleteTargetUsername = btn.dataset.username;
+                deleteUsernameText.textContent = `작성자: ${deleteTargetUsername}`;
+                deletePasswordInput.value = '';
+                deleteModal.classList.remove('hidden');
+            });
+        });
+    };
+
     // 모달 열기
     openModalBtn.addEventListener('click', () => {
         modal.classList.remove('hidden');
     });
-
     // 모달 닫기
     closeModalBtn.addEventListener('click', () => {
         modal.classList.add('hidden');
+    });
+
+    cancelDeleteBtn.addEventListener('click', () => {
+        deleteModal.classList.add('hidden');
     });
 
     // 게시글 업로드
@@ -73,12 +99,50 @@ window.addEventListener('DOMContentLoaded', () => {
             alert('게시글이 등록되었습니다!');
             modal.classList.add('hidden');
             await loadPosts(); // 게시글 다시 불러오기
+            attachDeleteEvents();
         } catch (err) {
             alert('서버 오류: ' + err.message);
         }
     });
 
-    //최초 실행
-    loadPosts();
+    // 삭제 요청
+    confirmDeleteBtn.addEventListener('click', async () => {
+        const password = deletePasswordInput.value.trim();
+        if (!password) {
+            alert('비밀번호를 입력해주세요.');
+            return;
+        }
+
+        try {
+            const res = await fetch('http://localhost:3001/api/posts', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    postId: Number(deleteTargetId),
+                    username: deleteTargetUsername,
+                    password: password
+                })
+            });
+
+            const result = await res.json();
+
+            if (!res.ok) {
+                alert(result.message || '삭제 실패');
+                return;
+            }
+
+            alert('삭제 성공!');
+            deleteModal.classList.add('hidden');
+            await loadPosts();
+            attachDeleteEvents();
+        } catch (err) {
+            alert('서버 오류: ' + err.message);
+        }
+    });
+
+    // 최초 실행
+    loadPosts().then(() => {
+        attachDeleteEvents();
+    });
 
 });
