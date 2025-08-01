@@ -1,58 +1,40 @@
-window.addEventListener('DOMContentLoaded', async () => {
+window.addEventListener('DOMContentLoaded', () => {
     const postList = document.getElementById('post-list');
     const openModalBtn = document.getElementById('open-modal-btn');
     const closeModalBtn = document.getElementById('close-modal-btn');
-    const modal = document.getElementById('modal');
     const submitBtn = document.getElementById('submit-post');
-    const deleteModal = document.getElementById('delete-modal');
-    const deleteUsernameText = document.getElementById('delete-post-username');
-    const deletePasswordInput = document.getElementById('delete-password');
-    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
-    const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+    const modal = document.getElementById('modal');
 
-    let deleteTargetId = null;
-    let deleteTargetUsername = null;
+    // 게시글 전체 조회 및 렌더링
+    const loadPosts = async () => {
+        try {
+            const res = await fetch('http://localhost:3001/api/posts');
+            const posts = await res.json();
 
-    // 게시글 렌더링
-    try {
-        const res = await fetch('http://localhost:3001/api/posts');
-        const posts = await res.json();
+            postList.innerHTML = ''; // 기존 목록 초기화
 
-        if (posts.length === 0) {
-            postList.innerHTML = '<p>게시글이 없습니다.</p>';
-            return;
-        }
+            if (posts.length === 0) {
+                postList.innerHTML = '<p>게시글이 없습니다.</p>';
+                return;
+            }
 
-        posts.forEach(post => {
-            const div = document.createElement('div');
-            div.className = 'post';
-            div.innerHTML = `
-                <div><strong>${post.username}</strong></div>
-                <div>${post.content}</div>
-                <div>❤️ 좋아요: ${post.like}</div>    
-                <button class="delete-btn" data-id="${post.id}" data-username="${post.username}">삭제</button>
-            `;
-            postList.appendChild(div);
-        });
-
-        // 삭제 요청
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                deleteTargetId = btn.dataset.id;
-                deleteTargetUsername = btn.dataset.username;
-                deleteUsernameText.textContent = `작성자: ${deleteTargetUsername}`;
-                deletePasswordInput.value = '';
-                deleteModal.classList.remove('hidden');
+            posts.forEach(post => {
+                const div = document.createElement('div');
+                div.className = 'post';
+                div.innerHTML = `
+                    <div><strong>${post.username}</strong></div>
+                    <div>${post.content}</div>
+                    <div>❤️ 좋아요 ${post.like}</div>
+                `;
+                postList.appendChild(div);
             });
-        });
-
-    } catch (err) {
-        postList.innerHTML = `<p>오류 발생: ${err.message}</p>`;
-    }
+        } catch (err) {
+            postList.innerHTML = `<p>오류 발생: ${err.message}</p>`;
+        }
+    };
 
     // 모달 열기
     openModalBtn.addEventListener('click', () => {
-        console.log('👉 버튼 클릭됨!');
         modal.classList.remove('hidden');
     });
 
@@ -61,8 +43,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         modal.classList.add('hidden');
     });
 
-
-    // 게시글 등록
+    // 게시글 업로드
     submitBtn.addEventListener('click', async () => {
         const username = document.getElementById('username').value.trim();
         const password = document.getElementById('password').value.trim();
@@ -82,59 +63,22 @@ window.addEventListener('DOMContentLoaded', async () => {
                 body: JSON.stringify({ username, password, content })
             });
 
+            const data = await res.json();
+
             if (!res.ok) {
-                const error = await res.json();
-                alert(error.message || '오류가 발생했어요!');
+                alert(data.message || '게시글 등록 실패');
                 return;
             }
 
             alert('게시글이 등록되었습니다!');
             modal.classList.add('hidden');
-            location.reload(); // 새로고침으로 게시글 반영
-        } catch (err) {
-            alert('서버 오류 발생: ' + err.message);
-        }
-    });
-
-
-
-    // 삭제 취소
-    cancelDeleteBtn.addEventListener('click', () => {
-        deleteModal.classList.add('hidden');
-    });
-
-    // 삭제 요청
-    confirmDeleteBtn.addEventListener('click', async () => {
-        const password = deletePasswordInput.value.trim();
-        if (!password) {
-            alert('비밀번호를 입력해주세요.');
-            return;
-        }
-
-        try {
-            const res = await fetch('http://localhost:3001/api/posts', {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    postId: Number(deleteTargetId),
-                    username: deleteTargetUsername,
-                    password: password
-                })
-            });
-
-            const result = await res.json();
-
-            if (!res.ok) {
-                alert(result.message || '삭제 실패');
-                return;
-            }
-
-            alert('삭제 성공!');
-            deleteModal.classList.add('hidden');
-            location.reload();
+            await loadPosts(); // 게시글 다시 불러오기
         } catch (err) {
             alert('서버 오류: ' + err.message);
         }
     });
-});
 
+    //최초 실행
+    loadPosts();
+
+});
