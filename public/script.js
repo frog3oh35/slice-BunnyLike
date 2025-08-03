@@ -31,10 +31,12 @@ window.addEventListener('DOMContentLoaded', () => {
                 const div = document.createElement('div');
                 div.className = 'post';
                 div.innerHTML = `
-                    <div><strong>${post.username}</strong></div>
-                    <div>${post.content}</div>
-                    <div>❤️ 좋아요 ${post.like}</div>
-                    <button class="delete-btn" data-id="${post.id}" data-username="${post.username}">삭제</button>
+                    <div class="username_css"><strong>${post.username}</strong></div>
+                    <div class="content_css">${post.content}</div>
+                    <dis class="post-footer">
+                        <div class="like_css">❤️ 좋아요 ${post.like}</div>
+                        <button class="delete-btn" data-id="${post.id}" data-username="${post.username}">삭제</button>
+                    </div>
                 `;
                 postList.appendChild(div);
             });
