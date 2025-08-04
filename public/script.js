@@ -33,8 +33,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 div.innerHTML = `
                     <div class="username_css"><strong>${post.username}</strong></div>
                     <div class="content_css">${post.content}</div>
-                    <dis class="post-footer">
-                        <div class="like_css">❤️ 좋아요 ${post.like}</div>
+                    <div class="post-footer">
+                        <div class="like-btn" data-id="${post.id}">❤️ ${post.like}</div>
                         <button class="delete-btn" data-id="${post.id}" data-username="${post.username}">삭제</button>
                     </div>
                 `;
@@ -54,6 +54,41 @@ window.addEventListener('DOMContentLoaded', () => {
                 deleteUsernameText.textContent = `작성자: ${deleteTargetUsername}`;
                 deletePasswordInput.value = '';
                 deleteModal.classList.remove('hidden');
+            });
+        });
+    };
+
+    // 좋아요 이벤트 바인딩 함수
+    const attachLikeEvents = () => {
+        document.querySelectorAll('.like-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const postId = btn.dataset.id;
+
+                try {
+                    const res = await fetch(`http://localhost:3001/api/posts/${postId}/like`, {
+                        method: 'PATCH'
+                    });
+
+                    const result = await res.json();
+
+                    if (!res.ok) {
+                        alert(result.message || '좋아요 실패');
+                        return;
+                    }
+
+                    // UI에 좋아요 수 업데이트
+                    btn.textContent = `❤️ ${result.totalLike}`;
+
+                    // 애니메이션 효과 추가
+                    btn.classList.add('liked');
+                    btn.style.transform = 'scale(1.4)';
+                    setTimeout(() => {
+                        btn.style.transform = 'scale(1)';
+                        btn.classList.remove('liked');
+                    }, 200);
+                } catch (err) {
+                    alert('서버 오류: ' + err.message);
+                }
             });
         });
     };
@@ -145,6 +180,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // 최초 실행
     loadPosts().then(() => {
         attachDeleteEvents();
+        attachLikeEvents();
     });
 
 });

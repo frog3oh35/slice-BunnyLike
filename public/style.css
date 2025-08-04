@@ -43,6 +43,13 @@ h3 {
     box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.08);
 }
 
+.modal input,
+.modal textarea {
+    outline: none;
+    border: 1px solid #9A9A9A;
+    transition: border-color 0.2s ease;
+}
+
 #post-list {
     display: flex;
     flex-direction: column;
@@ -73,6 +80,18 @@ h3 {
     align-items: center;
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+.like-btn {
+    transition: transform 0.2s ease;
+    background: transparent;
+    border: none;
+    color: #7A7A7A;
+    cursor: pointer;
+}
+
+.like-btn:hover {
+    color: red;
 }
 
 
