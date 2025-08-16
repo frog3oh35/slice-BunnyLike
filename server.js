@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const postRoutes = require('./routes/post');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
@@ -7,7 +8,7 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const app = express();
 const PORT = 3001;
 
-// app.use(express.static('public'))
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware
 app.use(cors());

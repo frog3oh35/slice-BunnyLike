@@ -73,10 +73,10 @@ module.exports = router;
 
 /**
  * @swagger
- * /api/posts:
+ *   /api/posts:
  *   delete:
  *     summary: 게시글 삭제
- *     description: username과 password를 입력받아 특정 ID의 게시글을 삭제합니다.
+ *     description: postId, username과 password를 입력받아 특정 ID의 게시글을 삭제합니다.
  *     requestBody:
  *       required: true
  *       content:
@@ -84,9 +84,12 @@ module.exports = router;
  *           schema:
  *             type: object
  *             required:
+ *               - postId
  *               - username
  *               - password
  *             properties:
+ *               postId:
+ *                 type: string
  *               username:
  *                 type: string
  *               password:
@@ -95,9 +98,9 @@ module.exports = router;
  *       '200':
  *         description: 게시글이 삭제되었습니다.
  *       '400':
- *         description: username과 password는 필수입니다.
+ *         description: username과 password는 필수 입력값입니다.
  *       '404':
- *         description: 해당 ID의 게시글을 찾을 수 없습니다.
+ *         description: 해당 username과 password 조합의 게시글을 찾을 수 없습니다.
  */
 
 /**

@@ -34,7 +34,10 @@ window.addEventListener('DOMContentLoaded', () => {
                     <div class="username_css"><strong>${post.username}</strong></div>
                     <div class="content_css">${post.content}</div>
                     <div class="post-footer">
-                        <div class="like-btn" data-id="${post.id}">❤️ ${post.like}</div>
+                        <button class="like-btn" data-id="${post.id}">
+                            <img src="bunny-outline.svg" alt="like" class="bunny-icon" />
+                            <span class="like-count">${post.like}</span>
+                        </button>
                         <button class="delete-btn" data-id="${post.id}" data-username="${post.username}">삭제</button>
                     </div>
                 `;
@@ -63,6 +66,8 @@ window.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.like-btn').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const postId = btn.dataset.id;
+                const img = btn.querySelector('img');
+                const likeCountSpan = btn.querySelector('.like-count');
 
                 try {
                     const res = await fetch(`http://localhost:3001/api/posts/${postId}/like`, {
@@ -77,15 +82,16 @@ window.addEventListener('DOMContentLoaded', () => {
                     }
 
                     // UI에 좋아요 수 업데이트
-                    btn.textContent = `❤️ ${result.totalLike}`;
+                    likeCountSpan.textContent = result.totalLike;
 
                     // 애니메이션 효과 추가
                     btn.classList.add('liked');
-                    btn.style.transform = 'scale(1.4)';
+                    img.src = 'bunny-fill.svg';
+
                     setTimeout(() => {
-                        btn.style.transform = 'scale(1)';
                         btn.classList.remove('liked');
-                    }, 200);
+                        img.src = 'bunny-outline.svg';
+                    }, 350);
                 } catch (err) {
                     alert('서버 오류: ' + err.message);
                 }

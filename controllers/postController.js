@@ -92,11 +92,11 @@ const toggleLike = (req, res) => {
         return res.status(404).json({ message: '게시글을 찾을 수 없습니다.' });
     }
 
-    post.likes += 1;
+    post.like += 1;
     res.status(200).json({
         postId: post.id,
         like: true,
-        totalLike: post.likes
+        totalLike: post.like
     });
 };
 
