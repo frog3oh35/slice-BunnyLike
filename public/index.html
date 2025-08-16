@@ -13,33 +13,33 @@
 
             <!-- 작성하기 버튼-->
             <h1>🐰 BunnyLike 🐰</h1>
-            <button id="open-modal-btn">게시글 작성</button>
+            <button id="open-modal-btn" data-cy="open-modal">게시글 작성</button>
 
-            <section id="post-list"></section>
+            <section id="post-list" data-cy="post-list"></section>
 
             <!-- 모달창 -->
-            <div id="modal" class="modal hidden">
+            <div id="modal" class="modal hidden" data-cy="modal">
                 <div class="modal-content">
                     <h2>게시글 작성</h2>
-                    <input type="text" id="username" placeholder="닉네임 (2자 이상)" />
-                    <input type="password" id="password" placeholder="비밀번호 (4자 이상)" />
-                    <textarea id="content" placeholder="300자 이내 내용 작성"></textarea>
+                    <input type="text" id="username" data-cy="username" placeholder="닉네임 (2자 이상)" />
+                    <input type="password" id="password" data-cy="password" placeholder="비밀번호 (4자 이상)" />
+                    <textarea id="content" data-cy="content" placeholder="300자 이내 내용 작성"></textarea>
                     <div class="modal-actions">
-                        <button id="close-modal-btn">취소</button>
-                        <button id="submit-post">업로드</button>
+                        <button id="close-modal-btn" data-cy="close-modal">취소</button>
+                        <button id="submit-post" data-cy="submit-post">업로드</button>
                     </div>
                 </div>
             </div>
 
             <!-- 삭제 확인 모달 -->
-            <div id="delete-modal" class="modal hidden">
+            <div id="delete-modal" class="modal hidden" data-cy="delete-modal">
                 <div class="modal-content">
                     <h3>게시글을 삭제할까요?</h3>
-                    <p id="delete-post-username" style="font-weight: bold;"></p>
-                    <input type="password" id="delete-password" placeholder="비밀번호를 입력하세요" />
+                    <p id="delete-post-username" data-cy="delete-username" style="font-weight: bold;"></p>
+                    <input type="password" id="delete-password" data-cy="delete-password" placeholder="비밀번호를 입력하세요" />
                     <div class="modal-actions">
-                        <button id="cancel-delete-btn">취소</button>
-                        <button id="confirm-delete-btn">삭제</button>
+                        <button id="cancel-delete-btn" data-cy="cancel-delete">취소</button>
+                        <button id="confirm-delete-btn" data-cy="confirm-delete">삭제</button>
                     </div>
                 </div>
             </div>
