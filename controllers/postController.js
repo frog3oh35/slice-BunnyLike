@@ -82,9 +82,47 @@ const deletePost = (req, res) => {
     res.status(200).json({ message: '게시글이 삭제되었습니다.' });
 };
 
+const updatePost = (req, res) => {
+    const { postId, password, content } = req.body;
+
+    // 기본 검증
+    if (!postId || !password || typeof content !== 'string') {
+        return res.status(400).json({ message: 'postId, password, content는 필수입니다.' });
+    }
+
+    const trimmed = content.trim();
+    if (trimmed.length === 0) {
+        return res.status(400).json({ message: '내용은 공백만 입력할 수 없습니다.' });
+    }
+    if (trimmed.length > 300) {
+        return res.status(400).json({ message: '내용은 300자 이하여야 합니다.' });
+    }
+
+    // 대상 글 찾기
+    const target = posts.find(p => p.id === Number(postId));
+    if (!target) {
+        return res.status(404).json({ message: '게시글을 찾을 수 없습니다.' });
+    }
+
+    // 비밀번호만으로 확인 (닉네임 불필요)
+    if (target.password !== password) {
+        return res.status(403).json({ message: '비밀번호가 일치하지 않습니다.' });
+    }
+
+    // 업데이트
+    target.content = trimmed;
+    // 표시용 플래그가 필요하면 target.updated = true;
+
+    return res.status(200).json({
+        message: '게시글이 수정되었습니다.',
+        post: { id: target.id, username: target.username, content: target.content, like: target.like }
+    });
+}
+
+
 //좋아요 토글
 const toggleLike = (req, res) => {
-    const { id } = req.params;
+    const { id: postIdParam } = req.params;
 
     const post = posts.find(post => post.id === parseInt(id));
 
@@ -94,7 +132,7 @@ const toggleLike = (req, res) => {
 
     post.like += 1;
     res.status(200).json({
-        postId: post.id,
+        id: post.id,
         like: true,
         totalLike: post.like
     });
@@ -104,5 +142,6 @@ module.exports = {
     createPost,
     getPosts,
     deletePost,
-    toggleLike
+    toggleLike,
+    updatePost
 };

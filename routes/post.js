@@ -4,7 +4,8 @@ const {
     createPost,
     getPosts,
     deletePost,
-    toggleLike
+    toggleLike,
+    updatePost
 } = require('../controllers/postController')
 
 // 게시글 등록
@@ -15,6 +16,9 @@ router.get('/', getPosts);
 
 // 게시글 삭제
 router.delete('/', deletePost);
+
+// 게시글 수정
+router.put('/', updatePost);
 
 // 좋아요 토글
 router.patch('/:id/like', toggleLike);
