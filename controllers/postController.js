@@ -61,17 +61,24 @@ const getPosts = (req, res) => {
 
 // 게시글 삭제
 const deletePost = (req, res) => {
-    const { postId, username, password } = req.body;
+    const { postId, username, password } = req.body || {};
+    const paramId = req.params?.id;
 
-    if (!postId || !username || !password) {
-        return res.status(400).json({ message: 'username과 password는 필수입니다.' });
+    const trimmedUsername = username?.trim();
+    const trimmedPassword = password?.trim();
+
+    // id는 body.postId 또는 params.id 둘 다 허용
+    const numericId = postId !== undefined ? Number(postId) : (paramId !== undefined ? Number(paramId) : NaN);
+
+    if (!Number.isInteger(numericId) || !trimmedUsername || !trimmedPassword) {
+        return res.status(400).json({ message: 'postId(또는 URL id), username, password는 필수입니다.' });
     }
 
     const index = posts.findIndex(
         post =>
-            post.id === postId &&
-            post.username === username &&
-            post.password === password
+            post.id === numericId &&
+            post.username === trimmedUsername &&
+            post.password === trimmedPassword
     );
 
     if (index === -1) {

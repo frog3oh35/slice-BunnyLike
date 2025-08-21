@@ -14,8 +14,9 @@ router.post('/', createPost);
 // 게시글 전체 조회
 router.get('/', getPosts);
 
-// 게시글 삭제
+// 게시글 삭제 (body.postId 또는 URL params.id 지원)
 router.delete('/', deletePost);
+router.delete('/:id', deletePost);
 
 // 게시글 수정
 router.put('/:id', updatePost);
