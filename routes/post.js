@@ -18,7 +18,7 @@ router.get('/', getPosts);
 router.delete('/', deletePost);
 
 // 게시글 수정
-router.put('/', updatePost);
+router.put('/:id', updatePost);
 
 // 좋아요 토글
 router.patch('/:id/like', toggleLike);

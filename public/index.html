@@ -43,6 +43,21 @@
                     </div>
                 </div>
             </div>
+
+            <div id="edit-modal" class="modal hidden" data-cy="edit-modal">
+                <div class="modal-content">
+                    <h3>게시글 수정</h3>
+                    <!--작성자만 안내 (id는 화면에 안 보임)-->
+                    <p id="edit-post-username" data-cy="edit-username" style="font-weight:bold;"></p>
+                    <input type="password" id="edit-password" data-cy="edit-password" placeholder="비밀번호를 입력하세요" />
+                    <textarea id="edit-content" data-cy="edit-content" placeholder="수정할 내용을 입력하세요(300자 이내)"></textarea>
+                    <div class="modal-actions">
+                        <button id="cancel-edit-btn" data-cy="cancel-edit">취소</button>
+                        <button id="confirm-edit-btn" data-cy="confirm-edit">수정</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
     <script src="script.js" defer></script>

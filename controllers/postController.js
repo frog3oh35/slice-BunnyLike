@@ -83,11 +83,17 @@ const deletePost = (req, res) => {
 };
 
 const updatePost = (req, res) => {
-    const { postId, password, content } = req.body;
+    const { id } = req.params;
+    const { password, content } = req.body;
 
     // 기본 검증
-    if (!postId || !password || typeof content !== 'string') {
+    if (!id || !password || typeof content !== 'string') {
         return res.status(400).json({ message: 'postId, password, content는 필수입니다.' });
+    }
+
+    const numbericId = Number(id);
+    if (!Number.isInteger(numbericId)) {
+        return res.status(400).json({ message: 'id는 정수여야 합니다.' });
     }
 
     const trimmed = content.trim();
@@ -99,7 +105,7 @@ const updatePost = (req, res) => {
     }
 
     // 대상 글 찾기
-    const target = posts.find(p => p.id === Number(postId));
+    const target = posts.find(p => p.id === numbericId);
     if (!target) {
         return res.status(404).json({ message: '게시글을 찾을 수 없습니다.' });
     }
@@ -117,14 +123,19 @@ const updatePost = (req, res) => {
         message: '게시글이 수정되었습니다.',
         post: { id: target.id, username: target.username, content: target.content, like: target.like }
     });
-}
+};
 
 
 //좋아요 토글
 const toggleLike = (req, res) => {
-    const { id: postIdParam } = req.params;
+    const { id } = req.params;
 
-    const post = posts.find(post => post.id === parseInt(id));
+    const numbericId = Number(id);
+    if (!Number.isInteger(numbericId)) {
+        return res.status(400).json({ message: 'id는 정수여야 합니다.' });
+    }
+
+    const post = posts.find(post => post.id === numbericId);
 
     if (!post) {
         return res.status(404).json({ message: '게시글을 찾을 수 없습니다.' });

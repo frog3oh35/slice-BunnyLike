@@ -11,8 +11,16 @@ window.addEventListener('DOMContentLoaded', () => {
     const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
     const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
 
+    const editModal = document.getElementById('edit-modal');
+    const editUsernameText = document.getElementById('edit-post-username');
+    const editPasswordInput = document.getElementById('edit-password');
+    const editContentInput = document.getElementById('edit-content');
+    const confirmEditBtn = document.getElementById('confirm-edit-btn');
+    const cancelEditBtn = document.getElementById('cancel-edit-btn');
+
     let deleteTargetId = null;
     let deleteTargetUsername = null;
+    let editTargetId = null;
 
     // 게시글 전체 조회 및 렌더링
     const loadPosts = async () => {
@@ -30,22 +38,46 @@ window.addEventListener('DOMContentLoaded', () => {
             posts.forEach(post => {
                 const div = document.createElement('div');
                 div.className = 'post';
+                div.setAttribute('data-cy', 'post'); // Cypress용 속성 추가
                 div.innerHTML = `
                     <div class="username_css"><strong>${post.username}</strong></div>
                     <div class="content_css">${post.content}</div>
                     <div class="post-footer">
-                        <button class="like-btn" data-id="${post.id}">
-                            <img src="bunny-outline.svg" alt="like" class="bunny-icon" />
-                            <span class="like-count">${post.like}</span>
-                        </button>
-                        <button class="delete-btn" data-id="${post.id}" data-username="${post.username}">삭제</button>
+                        <div class="left-buttons">
+                            <button class="edit-btn" data-id="${post.id}" data-username="${post.username}" data-cy="edit-btn">수정</button>
+                            <button class="delete-btn" data-id="${post.id}" data-username="${post.username}" data-cy="delete-btn">삭제</button>
+                        </div>
+                        <div class="right-buttons">
+                            <button class="like-btn" data-id="${post.id}" data-cy="like-btn">
+                                <img src="bunny-outline.svg" alt="like" class="bunny-icon" />
+                                <span class="like-count">${post.like}</span>
+                            </button>
+                        </div>
                     </div>
                 `;
                 postList.appendChild(div);
             });
+
+            // 이벤트 바인딩 함수들 호출
+            attachLikeEvents();
+            attachEditEvents();
+            attachDeleteEvents();
         } catch (err) {
             postList.innerHTML = `<p>오류 발생: ${err.message}</p>`;
         }
+    };
+
+    // 수정 버튼 이벤트 바인딩
+    const attachEditEvents = () => {
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                editTargetId = btn.dataset.id;
+                editUsernameText.textContent = `작성자: ${btn.dataset.username}`;
+                editPasswordInput.value = '';
+                editContentInput.value = '';
+                editModal.classList.remove('hidden');
+            });
+        });
     };
 
     // 삭제 버튼 이벤트 바인딩
@@ -60,6 +92,35 @@ window.addEventListener('DOMContentLoaded', () => {
             });
         });
     };
+
+    if (confirmEditBtn) {
+        confirmEditBtn.addEventListener('click', async () => {
+            const password = editPasswordInput.value.trim();
+            const content = editContentInput.value.trim();
+            if (!password || !content) { alert('비밀번호와 내용을 입력해주세요.'); return; }
+
+            try {
+                const res = await fetch(`http://localhost:3001/api/posts/${editTargetId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        password,
+                        content
+                    })
+                });
+                const result = await res.json();
+
+                if (!res.ok) { alert(result.message || '수정 실패'); return; }
+
+                alert('수정되었습니다!');
+                editModal.classList.add('hidden');
+                await loadPosts();
+                // loadPosts() 내에서 이미 이벤트 바인딩이 호출되므로 제거
+            } catch (err) {
+                alert('서버 오류: ' + err.message);
+            }
+        });
+    }
 
     // 좋아요 이벤트 바인딩 함수
     const attachLikeEvents = () => {
@@ -101,6 +162,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // 모달 열기
     openModalBtn.addEventListener('click', () => {
+        // 입력 필드 초기화
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('content').value = '';
         modal.classList.remove('hidden');
     });
     // 모달 닫기
@@ -110,6 +175,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
     cancelDeleteBtn.addEventListener('click', () => {
         deleteModal.classList.add('hidden');
+    });
+
+    // 수정 모달 취소 버튼 이벤트
+    cancelEditBtn.addEventListener('click', () => {
+        editModal.classList.add('hidden');
     });
 
     // 게시글 업로드
@@ -142,7 +212,7 @@ window.addEventListener('DOMContentLoaded', () => {
             alert('게시글이 등록되었습니다!');
             modal.classList.add('hidden');
             await loadPosts(); // 게시글 다시 불러오기
-            attachDeleteEvents();
+            // loadPosts() 내에서 이미 이벤트 바인딩이 호출되므로 제거
         } catch (err) {
             alert('서버 오류: ' + err.message);
         }
@@ -177,16 +247,13 @@ window.addEventListener('DOMContentLoaded', () => {
             alert('삭제 성공!');
             deleteModal.classList.add('hidden');
             await loadPosts();
-            attachDeleteEvents();
+            // loadPosts() 내에서 이미 이벤트 바인딩이 호출되므로 제거
         } catch (err) {
             alert('서버 오류: ' + err.message);
         }
     });
 
     // 최초 실행
-    loadPosts().then(() => {
-        attachDeleteEvents();
-        attachLikeEvents();
-    });
+    loadPosts();
 
 });
