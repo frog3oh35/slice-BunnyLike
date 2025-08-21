@@ -5,10 +5,7 @@ on: [push] # push될 때마다 실행
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: BunnyLike
-
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
