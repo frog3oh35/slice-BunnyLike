@@ -32,22 +32,25 @@ describe('🐰 BunnyLike 기본 플로우', () => {
         cy.get('[data-cy="content"]').type('좋아요 테스트용 글')
         cy.get('[data-cy="submit-post"]').click()
 
-        cy.contains('좋아요 테스트 글').should('be.visible')
+        // 모달이 닫힐 때까지 대기
+        cy.get('[data-cy="modal"]').should('have.class', 'hidden')
+        
+        // DOM 업데이트 완료 대기
+        cy.contains('좋아요 테스트용 글').should('be.visible')
 
-        cy.contains('좋아요 테스트용 글')
-            .parents('[data-cy="post"]')
-            .find('[data-cy="like-btn"]')
-            .as('like')
+        // 이벤트 바인딩 완료 대기 (중요!)
+        cy.get('[data-cy="like-btn"]').should('exist').and('be.visible')
 
         // 클릭 전/후 카운트 비교
-        cy.get('@like').find('.like-count').invoke('text').then((before) => {
+        cy.get('[data-cy="like-btn"]').first().find('.like-count').invoke('text').then((before) => {
             const prev = Number(before)
-            cy.get('@like').click()
-            cy.get('@like').find('.like-count')
-                .should(($span) => {
-                    const now = Number($span.text())
-                    expect(now).to.be.greaterThan(prev)
-                })
+            cy.get('[data-cy="like-btn"]').first().click()
+
+            // 좋아요 수 변경 확인
+            cy.get('[data-cy="like-btn"]').first().find('.like-count').should(($span) => {
+                const now = Number($span.text())
+                expect(now).to.be.greaterThan(prev)
+            })
         })
     })
 
@@ -59,23 +62,43 @@ describe('🐰 BunnyLike 기본 플로우', () => {
         cy.get('[data-cy="content"]').type('삭제 테스트 글')
         cy.get('[data-cy="submit-post"]').click()
 
+        // 모달이 닫힐 때까지 대기
+        cy.get('[data-cy="modal"]').should('have.class', 'hidden')
+        
+        // DOM 업데이트 완료 대기
+        cy.contains('삭제 테스트 글').should('be.visible')
+        cy.get('[data-cy="delete-btn"]').should('exist')
+
         // 글 삭제 시도 (틀린 비번)
-        cy.get('[data-cy="delete-btn"]').first().should('exist').click()
-        cy.get('#delete-password').type('틀린비번')
-        cy.get('#confirm-delete-btn').click()
+        cy.get('[data-cy="delete-btn"]').first().click()
+        cy.get('[data-cy="delete-password"]').type('틀린비번')
+        cy.get('[data-cy="confirm-delete"]').click()
         cy.on('window:alert', (txt) => {
             expect(txt).to.match(/삭제 실패|찾을 수 없습니다/)
         })
     })
 
     it('삭제 성공 플로우', () => {
-        // 이번엔 정상 삭제
-        cy.get('[data-cy="delete-btn"]').first().should('exist').click()
-        cy.get('#delete-password').type('1234')
-        cy.get('#confirm-delete-btn').click()
+        // 테스트용 게시글 생성
+        cy.get('[data-cy="open-modal"]').click()
+        cy.get('[data-cy="username"]').type('성공토끼')
+        cy.get('[data-cy="password"]').type('1234')
+        cy.get('[data-cy="content"]').type('성공 삭제 테스트 글')
+        cy.get('[data-cy="submit-post"]').click()
+
+        // 모달이 닫힐 때까지 대기
+        cy.get('[data-cy="modal"]').should('have.class', 'hidden')
+        
+        // DOM 업데이트 완료 대기
+        cy.contains('성공 삭제 테스트 글').should('be.visible')
+        cy.get('[data-cy="delete-btn"]').should('exist')
+
+        // 정상 삭제
+        cy.get('[data-cy="delete-btn"]').first().click()
+        cy.get('[data-cy="delete-password"]').type('1234')
+        cy.get('[data-cy="confirm-delete"]').click()
         cy.on('window:alert', (txt) => {
             expect(txt).to.include('삭제 성공')
         })
     })
-
 })
