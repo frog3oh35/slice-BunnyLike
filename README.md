@@ -3,9 +3,10 @@
 
 간단한 CRUD + 좋아요 기능이 포함된 초미니 게시판 프로젝트
 
+
 * **Jira** : 태스크/이슈 관리 (기능 구현 및 버그 트래킹 기록) https://slice-projects.atlassian.net/jira/software/projects/BNL/boards/2
 
-* **Confluence** : API 명세, 테스트 케이스, 프로젝트 회고 기록 https://slice-projects.atlassian.net/wiki/x/owEB
+* **Confluence** : API 명세, 테스트 케이스, 상세 워크플로우 설명, 프로젝트 회고 기록 https://slice-projects.atlassian.net/wiki/x/owEB
 
 * **GitHub** : 코드 저장소 및 버전 관리
 
@@ -94,3 +95,23 @@ npm start
 * Postman으로 수기 API 테스트
 
 * Cypress로 UI E2E 테스트 (`cypress/e2e/post.cy.js` 참고)
+
+
+
+
+---
+
+
+
+
+## 😺 CI & Newman 테스트 자동화
+
+본 프로젝트는 **GitHub Actions**를 활용해 코드 푸시 시마다 API 테스트를 자동 실행하도록 설정했습니다.
+
+테스트는 **Postman 컬렉션 -> Newman CLI** 기반으로 수행됩니다.
+
+
+
+## 📁 워크플로우 파일
+`.github/workflows/ci.yml`
+
